@@ -1,0 +1,187 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en" xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--  <title>Transfer</title>-->
+<!--  <th:block th:replace="layout/head :: head"/>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div class="container">-->
+<!--  <header>-->
+<!--    <nav class="navbar bg-body-tertiary">-->
+<!--      <div class="container-fluid">-->
+<!--        <a class="navbar-brand">Transfer</a>-->
+<!--        <div class="d-flex" style="gap: 10px;">-->
+<!--          <a href="/customers">-->
+<!--            <button class="btn btn-outline-light" type="button">-->
+<!--              <i class="fas fa-list-ul"></i>-->
+<!--              Customers List-->
+<!--            </button>-->
+<!--          </a>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </nav>-->
+<!--  </header>-->
+
+<!--  <div class="content">-->
+<!--    <form th:object="${transfer}" method="post">-->
+<!--      <div class="row mb-3 mt-3">-->
+<!--        <div class="col-lg-3">-->
+<!--          <label for="id" class="form-label">Sender ID</label>-->
+<!--          <input class="form-control" id="id" th:field="*{sender.id}" readonly>-->
+<!--        </div>-->
+<!--        <div class="col-lg-3">-->
+<!--          <label for="fullName" class="form-label">Sender Name</label>-->
+<!--          <input type="text" class="form-control" id="fullName" th:field="*{sender.fullName}" readonly>-->
+<!--        </div>-->
+<!--        <div class="col-lg-3">-->
+<!--          <label for="email" class="form-label">Email</label>-->
+<!--          <input type="text" class="form-control" id="email" th:field="*{sender.email}" readonly>-->
+<!--        </div>-->
+<!--        <div class="col-lg-3">-->
+<!--          <label for="balance" class="form-label">Sender Balance</label>-->
+<!--          <input type="text" class="form-control" id="balance" th:field="*{sender.balance}" readonly>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--      <div class="row mb-3">-->
+<!--        <div class="col-lg-3">-->
+<!--          <label class="form-label">Recipient Name</label>-->
+<!--          <select class="form-control" th:field="${transfer.recipient.id}">-->
+<!--            <option th:each="item : ${recipient}"-->
+<!--                    th:text="${'(' + item.id + ') ' + item.fullName}"-->
+<!--                    th:value="${item.id}">-->
+<!--            </option>-->
+<!--          </select>-->
+<!--        </div>-->
+<!--        <div class="col-lg-3">-->
+<!--          <label class="form-label">Transfer Amount ($)</label>-->
+<!--          <input type="text" class="form-control" id="transferAmount" th:field="${transfer.transferAmount}">-->
+<!--        </div>-->
+<!--        <div class="col-lg-3">-->
+<!--          <label class="form-label">Fees ($)</label>-->
+<!--          <input type="text" class="form-control" id="fee" th:field="${transfer.fee}" readonly>-->
+<!--        </div>-->
+<!--        <div class="col-lg-3">-->
+<!--          <label class="form-label">Total Amount of Transaction ($)</label>-->
+<!--          <input type="text" class="form-control" id="totalAmount" th:field="${transfer.total}" readonly>-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      <div class="row pt-3">-->
+<!--        <div class="col-lg-3">-->
+<!--          <button type="submit" class="btn btn-outline-secondary">-->
+<!--            <i class="fas fa-plus"></i>-->
+<!--            Deposit-->
+<!--          </button>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </form>-->
+<!--  </div>-->
+<!--</div>-->
+
+
+<!--<th:block th:if="${success == true}">-->
+<!--  <footer class="container-fluid success">-->
+<!--    <div class="container">-->
+<!--      <div class="notification">-->
+<!--        <p class="success" th:text="${message}"></p>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </footer>-->
+<!--</th:block>-->
+
+<!--<th:block th:if="${success == false}">-->
+<!--  <footer class="container-fluid error">-->
+<!--    <div class="container">-->
+<!--      <div class="notification">-->
+<!--        <p class="error" th:text="${message}"></p>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </footer>-->
+<!--</th:block>-->
+
+<!--<script>-->
+<!--  const transferAmountInput = document.getElementById('transferAmount');-->
+<!--  const feeInput = document.getElementById('fee');-->
+<!--  const totalAmountInput = document.getElementById('totalAmount');-->
+
+<!--  const feePercentage = parseFloat(feeInput.value);-->
+
+<!--  transferAmountInput.addEventListener('input', function () {-->
+<!--    const transferAmount = parseFloat(transferAmountInput.value);-->
+<!--    if (!isNaN(transferAmount)) {-->
+<!--      const totalAmount = transferAmount + (transferAmount * feePercentage / 100);-->
+<!--      totalAmountInput.value = totalAmount.toFixed(2);-->
+<!--    } else {-->
+<!--      totalAmountInput.value = '';-->
+<!--    }-->
+<!--  })-->
+<!--</script>-->
+
+
+
+
+<!--</body>-->
+<!--</html>-->
+
+<th:block th:fragment="modalTransfer">
+  <div class="modal fade" id="modalTransfer">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">Modal Transfer</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="error-area mb-3 hide"></div>
+          <form id="formTransfer" method="post">
+            <div class="row mb-3">
+              <div class="col-lg-6">
+                <label for="idSender">Sender ID</label>
+                <input type="text" name="idSender" id="idSender" class="form-control" readonly>
+              </div>
+              <div class="col-lg-6">
+                <label for="recipient">Recipient Name</label>
+                <select name="recipient" id="recipient" class="form-control">
+                </select>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-lg-6">
+                <label for="senderName">Sender Name</label>
+                <input type="text" name="senderName" id="senderName" class="form-control" readonly>
+              </div>
+              <div class="col-lg-6">
+                <label for="amountTransfer">Transfer Amount</label>
+                <input type="text" name="amountTransfer" id="amountTransfer" class="form-control">
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-lg-6">
+                <label for="emailSender">Sender Email</label>
+                <input type="text" name="emailSender" id="emailSender" class="form-control" readonly>
+              </div>
+              <div class="col-lg-6">
+                <label for="fee">Fee(%)</label>
+                <input type="text" name="fee" id="fee" class="form-control" readonly>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-lg-6">
+                <label for="balanceSender">Sender Balance</label>
+                <input type="text" name="balanceSender" id="balanceSender" class="form-control" readonly>
+              </div>
+              <div class="col-lg-6">
+                <label for="totalAmount">Total Amount</label>
+                <input type="text" name="totalAmount" id="totalAmount" class="form-control" readonly>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary btnTransfer" id="btnTransfer">Transfer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</th:block>
