@@ -57,10 +57,11 @@ let customer = new Customer();
 
 const itemsPerPage = 2; // Số lượng khách hàng trên mỗi trang
 let currentPage = 1;
+let currentPageButton = null;
+let ellipsisShown = false;
 
 function initializePage() {
     currentPage = 1; // Đặt trang ban đầu là trang 1
-
     refreshCustomerList();
 }
 
@@ -79,57 +80,89 @@ function refreshCustomerList() {
         $(strBody).append(str);
     }
 
-    // Cập nhật thông tin phân trang
     const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
 
-    $('.pageButton_').remove();
-    // $('.pagination').append('<button class="pageButton">Previous</button>');
-    for (let i = 1; i <= totalPages; i++) {
-        const pageButton = $(`<button class ="pageButton_">${i}</button>`);
-        pageButton.click(function () {
-            // Xử lý sự kiện khi người dùng chọn trang
-            currentPage = i;
+    $('.pageButton').remove();
 
-            $('#currentPage button.pageButton').addClass("active");
-            // document.getElementById("currentPage").textContent = currentPage;
-            refreshCustomerList();
-        });
-        $('#currentPage').append(pageButton);
+    if (currentPage >= 2) {
+        $('.pagination').append('<button class="pageButton" id="firstPage">1</button>');
+        if (currentPage > 4) {
+            $('.pagination').append('<p>...</p>');
+        } else if (!ellipsisShown){
+            ellipsisShown = true;
+        }else {
+            ellipsisShown = false;
+        }
     }
-    // $('.pagination').append('<button class="pageButton">Next</button>');
 
+    for (let i = currentPage - 2; i < currentPage; i++) {
+        if (i > 1) {
+            $('.pagination').append(`<button class="pageButton">${i}</button>`);
+        }
+    }
+
+    $('.pagination').append(`<button class="pageButton activePage">${currentPage}</button>`);
+
+    for (let i = currentPage + 1; i <= currentPage + 2; i++) {
+        if (i < totalPages) {
+            $('.pagination').append(`<button class="pageButton">${i}</button>`);
+        }
+    }
+
+    // Hiển thị "..." nếu cần
+    // if (currentPage < totalPages - 2 && !ellipsisShown) {
+    //     $('.currentPage').append('<span>...</span>');
+    // }
+
+    if (currentPage < totalPages) {
+        $('.pagination').append(`<button class="pageButton">${totalPages}</button>`);
+    }
+
+    $('.pageButton').click(function () {
+        const selectedPage = parseInt($(this).text());
+        if (!isNaN(selectedPage)) {
+            currentPage = selectedPage;
+            refreshCustomerList();
+        }
+    });
     $('#pageInfo').text(`Page ${currentPage} of ${totalPages}`);
-    $('#prevPage').prop('disabled', currentPage === 1);
-    $('#nextPage').prop('disabled', currentPage === totalPages);
+    // $('#prevPage').prop('disabled', currentPage === 1);
+    // $('#nextPage').prop('disabled', currentPage === totalPages);
 }
 
-// Bắt sự kiện khi ấn nút Previous
-$('#prevPage').on('click', () => {
-    if (currentPage > 1) {
-        currentPage--;
-        $('#currentPage button.pageButton').addClass("active");
-        refreshCustomerList();
-    }
-});
 
-$('#nextPage').on('click', () => {
-    const totalPages = Math.ceil(customers.length / itemsPerPage);
-    if (currentPage < totalPages) {
-        currentPage++;
-        $('#currentPage button.pageButton').addClass("active");
-        refreshCustomerList();
-    }
-});
-
-// Bắt sự kiện khi ấn nút Search
+// $('#prevPage').on('click', () => {
+//     if (currentPage > 1) {
+//         currentPage--;
+//         if (currentPageButton) {
+//             currentPageButton.removeClass("active");
+//         }
+//         currentPageButton = $(`.pageButton:contains(${currentPage})`);
+//         currentPageButton.addClass("active");
+//         refreshCustomerList();
+//     }
+// });
+// $('#nextPage').on('click', () => {
+//     const totalPages = Math.ceil(customers.length / itemsPerPage);
+//     if (currentPage < totalPages) {
+//         currentPage++;
+//         if (currentPageButton) {
+//             currentPageButton.removeClass("active");
+//         }
+//         currentPageButton = $(`.pageButton:contains(${currentPage})`);
+//         currentPageButton.addClass("active");
+//         refreshCustomerList();
+//     }
+// });
 $('#searchButton').on('click', () => {
     currentPage = 1;
-    // document.getElementById("currentPage").textContent = currentPage;
+    if (currentPageButton) {
+        currentPageButton.removeClass("active");
+    }
     refreshCustomerList();
 });
 
-// Khởi chạy với danh sách ban đầu
-refreshCustomerList();
+initializePage();
 
 
 const renderCustomer = (obj) => {
@@ -296,7 +329,10 @@ const updateCustomer = () => {
         $.ajax({
             headers: {
                 'accept': 'application/json', 'content-type': 'application/json'
-            }, type: 'PATCH', url: "http://localhost:8080/api/customers/" + customerId, data: JSON.stringify(customer)
+            },
+            type: 'PATCH',
+            url: "http://localhost:8080/api/customers/" + customerId,
+            data: JSON.stringify(customer)
         })
             .done((data) => {
                 const str = renderCustomer(data);
@@ -339,7 +375,10 @@ const deleteCustomer = () => {
                 $.ajax({
                     headers: {
                         'accept': 'application/json', 'content-type': 'application/json'
-                    }, type: 'DELETE', url: "http://localhost:8080/api/customers/" + id, data: JSON.stringify(customer)
+                    },
+                    type: 'DELETE',
+                    url: "http://localhost:8080/api/customers/" + id,
+                    data: JSON.stringify(customer)
                 })
                     .done(() => {
                         webToast.Success({
@@ -712,4 +751,4 @@ $(() => {
     showWithdraw();
     showTransfer();
     initializePage();
-})
+});

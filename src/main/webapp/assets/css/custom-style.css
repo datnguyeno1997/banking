@@ -44,3 +44,9 @@ footer.error {
 .notification p.error {
     color: #b05965;
 }
+
+.activePage {
+    background-color: #0b5ed7;
+    color: white;
+}
+
