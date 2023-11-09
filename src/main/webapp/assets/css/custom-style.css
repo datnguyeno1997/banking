@@ -7,9 +7,7 @@
     color: #fff;
     font-weight: 500;
 }
-label{
-    font-weight: bold;
-}
+
 .navbar-brand:hover {
     color: #fff;
 }
@@ -45,8 +43,27 @@ footer.error {
     color: #b05965;
 }
 
-.activePage {
-    background-color: #0b5ed7;
-    color: white;
+form label{
+    font-weight: bold;
 }
 
+label.error {
+    color: red;
+}
+
+input.error {
+    border: solid 1px red;
+}
+
+.hide {
+    display: none;
+}
+
+.show {
+    display: block !important;
+}
+
+.error-area {
+    font-weight: bold;
+    color: red;
+}

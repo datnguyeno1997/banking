@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class Deposit {
+public class Deposit extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,5 @@ public class Deposit {
     private Customer customer;
 
     private BigDecimal transactionAmount;
-
-    private Boolean deleted;
 
 }

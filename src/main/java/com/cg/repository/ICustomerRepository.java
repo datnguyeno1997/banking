@@ -20,7 +20,7 @@ public interface ICustomerRepository extends JpaRepository<Customer, Long> {
             "cus.email, " +
             "cus.phone, " +
             "cus.balance, " +
-            "cus.address" +
+            "cus.locationRegion" +
             ") FROM Customer AS cus "
     )
     List<CustomerResDTO> findAllCustomerResDTO();

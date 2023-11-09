@@ -1,4 +1,5 @@
 package com.cg.model.dto.response;
+import com.cg.model.LocationRegion;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,15 +17,15 @@ public class CustomerResDTO {
     private String fullName;
     private String email;
     private String phone;
-    private String address;
     private BigDecimal balance;
+    private LocationRegionResDTO locationRegion;
 
-    public CustomerResDTO(Long id, String fullName, String email, String phone, BigDecimal balance, String address) {
+    public CustomerResDTO(Long id, String fullName, String email, String phone, BigDecimal balance, LocationRegion locationRegion) {
         this.id = id;
         this.fullName = fullName;
         this.email = email;
         this.phone = phone;
         this.balance = balance;
-        this.address = address;
+        this.locationRegion = locationRegion.toLocationRegionResDTO();
     }
 }

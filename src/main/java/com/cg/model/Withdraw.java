@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class Withdraw {
+public class Withdraw extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,8 +25,5 @@ public class Withdraw {
     private Customer customer;
 
     private BigDecimal transactionAmount;
-
-    private Boolean deleted;
-
 
 }

@@ -19,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @Where(clause = "deleted = 0")
 @SQLDelete(sql = "UPDATE customers SET `deleted` = 1 WHERE (`id` = ?);")
-public class Customer {
+public class Customer extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,8 +31,6 @@ public class Customer {
 
     private String phone;
 
-    private String address;
-
     @Column(precision = 10, scale = 0, nullable = false, updatable = false)
     private BigDecimal balance;
 
@@ -42,16 +40,18 @@ public class Customer {
     @OneToMany(mappedBy = "recipient")
     private List<Transfer> transferRecipient;
 
-    private Boolean deleted = false;
+    @OneToOne
+    @JoinColumn(name = "location_region_id", referencedColumnName = "id", nullable = false)
+    private LocationRegion locationRegion;
 
     public CustomerResDTO toCustomerResDTO() {
         return new CustomerResDTO()
                 .setId(id)
                 .setFullName(fullName)
-                .setAddress(address)
                 .setEmail(email)
                 .setPhone(phone)
-                .setBalance(balance);
+                .setBalance(balance)
+                .setLocationRegion(locationRegion.toLocationRegionResDTO());
     }
 
 }

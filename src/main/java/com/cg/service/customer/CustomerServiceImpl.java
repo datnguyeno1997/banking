@@ -29,6 +29,8 @@ public class CustomerServiceImpl implements ICustomerService {
 
     private final IHistoryRepository historyRepository;
 
+    private final ILocationRegionRepository locationRegionRepository;
+
     @Override
     public List<CustomerResDTO> findAllCustomerResDTO() {
         return customerRepository.findAllCustomerResDTO();
@@ -48,6 +50,10 @@ public class CustomerServiceImpl implements ICustomerService {
     }
     @Override
     public Customer createCustomer (Customer customer) {
+        LocationRegion locationRegion = customer.getLocationRegion();
+        locationRegionRepository.save(locationRegion);
+
+        customer.setLocationRegion(locationRegion);
         customer.setBalance(BigDecimal.ZERO);
         customerRepository.save(customer);
 
@@ -66,6 +72,7 @@ public class CustomerServiceImpl implements ICustomerService {
         Customer oldCustomer = findById(customer.getId()).get();
         customer.setBalance(oldCustomer.getBalance());
         customer.setDeleted(oldCustomer.getDeleted());
+        locationRegionRepository.save(customer.getLocationRegion());
         customerRepository.save(customer);
 
         return customer;
@@ -77,6 +84,7 @@ public class CustomerServiceImpl implements ICustomerService {
     }
     @Override
     public void deposit(Deposit deposit) {
+
         depositRepository.save(deposit);
 
         Long customerId = deposit.getCustomer().getId();
@@ -95,21 +103,27 @@ public class CustomerServiceImpl implements ICustomerService {
     }
     @Override
     public void transfer(TransferReqDTO transferReqDTO) {
+
         Long senderId = Long.valueOf(transferReqDTO.getSenderId());
         Long recipientId = Long.valueOf(transferReqDTO.getRecipientId());
         String transferAmountStr = transferReqDTO.getTransferAmount();
         BigDecimal transferAmount = BigDecimal.valueOf(Long.parseLong(transferAmountStr));
         Long fee = 10L;
+
         BigDecimal feeAmount = transferAmount.multiply(BigDecimal.valueOf(fee)).divide(BigDecimal.valueOf(100));
         BigDecimal transactionAmount = transferAmount.add(feeAmount);
+
         customerRepository.decrementBalance(senderId, transactionAmount);
         customerRepository.incrementBalance(recipientId, transferAmount);
+
         Optional<Customer> sender = customerRepository.findById(senderId);
         Optional<Customer> recipient = customerRepository.findById(recipientId);
-        Transfer transfer = new Transfer(transferAmount, transactionAmount, BigDecimal.valueOf(fee), sender.get(), recipient.get());
-        transferRepository.save(transfer);
-        createHistories(transfer);
 
+        Transfer transfer = new Transfer(transferAmount, transactionAmount, BigDecimal.valueOf(fee), sender.get(), recipient.get());
+
+        transferRepository.save(transfer);
+
+        createHistories(transfer);
     }
     public void createHistories(Transfer transfer) {
         History history = new History();
@@ -125,7 +139,6 @@ public class CustomerServiceImpl implements ICustomerService {
     public List<HistoryResDTO> findAllHistory() {
         return historyRepository.findAllHistoryResDTO();
     }
-
     @Override
     public List<Customer> findAllWithoutId(Long id) {
         List<Customer> customers = customerRepository.findAllByDeleted(false);
