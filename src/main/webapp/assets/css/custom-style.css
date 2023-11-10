@@ -67,3 +67,7 @@ input.error {
     font-weight: bold;
     color: red;
 }
+
+.activePage{
+    background-color: #0a58ca;
+}

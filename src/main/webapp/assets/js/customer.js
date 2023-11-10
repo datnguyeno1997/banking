@@ -59,6 +59,11 @@ let customers = [];
 let customer = new Customer();
 let locationRegion = new LocationRegion();
 
+const itemsPerPage = 2;
+let currentPage = 1;
+let currentPageButton = null;
+let totalPages = 1;
+
 const renderCustomer = (obj) => {
     return `
             <tr id="tr_${obj.id}">
@@ -263,6 +268,12 @@ const createCustomer = () => {
                     delay: 2000,
                     align: 'topright'
                 });
+
+                // window.location.href = "/customer/" + data.id;
+
+
+                refreshCustomerList();
+                currentPage = totalPages;
                 refreshCustomerList();
             })
             .fail((error) => {
@@ -410,13 +421,16 @@ const deleteCustomer = () => {
                     data: JSON.stringify(customer)
                 })
                     .done(() => {
+                        customers.pop();
                         webToast.Success({
                             status: 'Xóa thành công',
                             message: '',
                             delay: 2000,
                             align: 'topright'
                         });
-
+                        refreshCustomerList();
+                        currentPage = totalPages;
+                        refreshCustomerList();
                     })
                     .fail((error) => {
                         console.log(error);
@@ -918,11 +932,6 @@ const initializeControlEvent = () => {
     })
 }
 
-
-const itemsPerPage = 2;
-let currentPage = 1;
-let currentPageButton = null;
-
 function initializePage() {
     currentPage = 1;
     refreshCustomerList();
@@ -941,7 +950,7 @@ function refreshCustomerList() {
         const str = renderCustomer(filteredCustomers[i]);
         $(strBody).append(str);
     }
-    const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
+    totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
     $('.pageButton').remove();
     if (currentPage >= 2) {
         $('.pagination').append('<button class="pageButton" id="firstPage">1</button>');
@@ -968,6 +977,7 @@ function refreshCustomerList() {
     }
     $('.pageButton').click(function () {
         const selectedPage = parseInt($(this).text());
+        console.log(selectedPage)
         if (!isNaN(selectedPage)) {
             currentPage = selectedPage;
             refreshCustomerList();
